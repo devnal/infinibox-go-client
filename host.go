@@ -2,9 +2,7 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-
 	"github.com/go-resty/resty"
 	log "github.com/sirupsen/logrus"
 )
@@ -49,7 +47,7 @@ func (c *Client) GetHostByName(hostname string) (*Host, error) {
 	queryRes, err := c.Find("hosts", "name", "eq", hostname)
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("cannot find hostname: %s, error: %s", hostname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("cannot find hostname: %s, error: %s", hostname, err.Error()))
 	}
 
 	if queryRes == nil {
@@ -60,11 +58,11 @@ func (c *Client) GetHostByName(hostname string) (*Host, error) {
 
 	err = json.Unmarshal(*queryRes, &hosts)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("unable to decode host: %s query result, error: %s", hostname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("unable to decode host: %s query result, error: %s", hostname, err.Error()))
 	}
 
 	if len(hosts) == 0 {
-		return nil, errors.New(fmt.Sprintf("host %s not found", hostname))
+		return nil, fmt.Errorf(fmt.Sprintf("host %s not found", hostname))
 	}
 
 	log.Debugf("Found host object: %#v", &hosts[0])
@@ -91,11 +89,11 @@ func (c *Client) GetAllHosts() (*[]Host, error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New("error getting hosts collection")
+		return nil, fmt.Errorf("error getting hosts collection")
 	}
 
 	if num := result.ApiMetadata["number_of_objects"]; num == nil {
-		return nil, errors.New("cannot parse metadata for number_of_objects field")
+		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	} else {
 		if num == float64(0) {
 			log.Infof("hosts collection is empty")
@@ -106,7 +104,7 @@ func (c *Client) GetAllHosts() (*[]Host, error) {
 	var hosts []Host
 	err = json.Unmarshal(*result.ApiResult, &hosts)
 	if err != nil {
-		return nil, errors.New("error getting hosts collection")
+		return nil, fmt.Errorf("error getting hosts collection")
 	}
 
 	log.Debugf("Got hosts collection")
@@ -130,7 +128,7 @@ func (c *Client) GetHost(hostID int64) (*Host, error) {
 	var host Host
 	err = json.Unmarshal(*result.ApiResult, &host)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("json: %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("json: %s", err.Error()))
 	}
 
 	log.Debugf("Got host object: %#v", host)
@@ -165,7 +163,7 @@ func (c *Client) GetHostIDbyInitiatorAddress(address string) (ID int64, err erro
 
 	err = json.Unmarshal(*result.ApiResult, &hosts)
 	if err != nil {
-		return -1, errors.New(fmt.Sprintf("json: %s", err.Error()))
+		return -1, fmt.Errorf(fmt.Sprintf("json: %s", err.Error()))
 	}
 
 	var host Host
@@ -221,12 +219,12 @@ func (h *Host) Create(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating host: %s,  %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error creating host: %s,  %s", h.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &h)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating host: %s,  %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error creating host: %s,  %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully created host %s", h.Name)
@@ -243,13 +241,13 @@ func (h *Host) Delete(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error deleting host: %s,  %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error deleting host: %s,  %s", h.Name, err.Error()))
 	}
 
 	var host Host
 	err = json.Unmarshal(*result.ApiResult, &host)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error deleting host: %s,  %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error deleting host: %s,  %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully deleted host %s", h.Name)
@@ -266,12 +264,12 @@ func (h *Host) Get(client *Client) (host *Host, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s,  %s", h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s,  %s", h.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &host)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s,  %s", h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s,  %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully fetched host %s", h.Name)
@@ -288,12 +286,12 @@ func (h *Host) GetPorts(client *Client) (ports *[]Port, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s ports,  %s", h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s ports,  %s", h.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &ports)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s ports,  %s", h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s ports,  %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Got host: %s ports", h.Name)
@@ -307,7 +305,7 @@ func (h *Host) Update(client *Client) (err error) {
 
 	currentHost, err := h.Get(client)
 	if err != nil {
-		return errors.New(fmt.Sprintf("host update failed, error: %s", err.Error()))
+		return fmt.Errorf(fmt.Sprintf("host update failed, error: %s", err.Error()))
 	}
 	body := map[string]interface{}{}
 
@@ -337,12 +335,12 @@ func (h *Host) Update(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error updating host: %s,  %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error updating host: %s,  %s", h.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &h)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error updating host: %s,  %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error updating host: %s,  %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Updated host: %s", h.Name)
@@ -363,13 +361,13 @@ func (h *Host) AddPort(client *Client, port *Port) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding port to host: %s %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding port to host: %s %s", h.Name, err.Error()))
 	}
 
 	var newport Port
 	err = json.Unmarshal(*result.ApiResult, &newport)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding port to host: %s %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding port to host: %s %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Added port type: %s address: %s to host: %s", port.Type, port.Address, h.Name)
@@ -393,13 +391,13 @@ func (h *Host) AddLUN(client *Client, lun *Lun) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding lun to host: %s %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding lun to host: %s %s", h.Name, err.Error()))
 	}
 
 	var newlun Lun
 	err = json.Unmarshal(*result.ApiResult, &newlun)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding lun to host: %s %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding lun to host: %s %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Added volume_id: %d as lun to host: %s", lun.VolumeID, h.Name)
@@ -416,12 +414,12 @@ func (h *Host) GetLUNs(client *Client) (luns *[]Lun, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s luns,  %s", h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s luns,  %s", h.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &luns)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s luns,  %s", h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s luns,  %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Got host: %s luns", h.Name)
@@ -438,12 +436,12 @@ func (h *Host) GetLUN(client *Client, lunID int) (lun *Lun, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s lun ID %d ,  %s", h.Name, lunID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s lun ID %d ,  %s", h.Name, lunID, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &lun)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host: %s lun ID %d,  %s", h.Name, lunID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s lun ID %d,  %s", h.Name, lunID, err.Error()))
 	}
 
 	log.Debugf("Got host: %s lun ID %d", h.Name, lunID)
@@ -460,12 +458,12 @@ func (h *Host) DeleteLUN(client *Client, lunID int) (lun *Lun, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting host: %s lun ID %d ,  %s", h.Name, lunID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting host: %s lun ID %d ,  %s", h.Name, lunID, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &lun)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting host: %s lun ID %d,  %s", h.Name, lunID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting host: %s lun ID %d,  %s", h.Name, lunID, err.Error()))
 	}
 
 	log.Debugf("Deleting Lun ID %d for host %s", lunID, h.Name)
@@ -482,12 +480,12 @@ func (h *Host) UnMapVolume(client *Client, volumeID uint64) (lun *Lun, err error
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error umapping volume ID %d from host: %s, %s", volumeID, h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error umapping volume ID %d from host: %s, %s", volumeID, h.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &lun)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error umapping volume ID %d from host: %s, %s", volumeID, h.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error umapping volume ID %d from host: %s, %s", volumeID, h.Name, err.Error()))
 	}
 
 	log.Debugf("Unmapped volume ID: %d from host %s", volumeID, h.Name)
@@ -500,7 +498,7 @@ func (h *Host) SetMetadata(client *Client, key string, value string) (err error)
 
 	err = client.AddMetadata(&Metadata{ObjectID: h.ID, Key: key, Value: value})
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to set metadata for host %s, error %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("unable to set metadata for host %s, error %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Set metadata for host %s", h.Name)
@@ -514,7 +512,7 @@ func (h *Host) GetMetadata(client *Client, key string) (metadata *[]Metadata, er
 
 	metadata, err = client.GetMetadataByObject(h.ID)
 	if err != nil {
-		return metadata, errors.New(fmt.Sprintf("unable to get metadata for host %s, error %s", h.Name, err.Error()))
+		return metadata, fmt.Errorf(fmt.Sprintf("unable to get metadata for host %s, error %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Got metadata for host %s", h.Name)
@@ -528,7 +526,7 @@ func (h *Host) GetMetadataValue(client *Client, key string) (value interface{}, 
 
 	metadata, err := client.GetMetadataByObjectAndKey(h.ID, key)
 	if err != nil {
-		return value, errors.New(fmt.Sprintf("unable to get metadata for host %s, error %s", h.Name, err.Error()))
+		return value, fmt.Errorf(fmt.Sprintf("unable to get metadata for host %s, error %s", h.Name, err.Error()))
 	}
 
 	value = metadata.Value
@@ -544,7 +542,7 @@ func (h *Host) UnSetMetadata(client *Client, key string) (err error) {
 
 	err = client.DeleteMetadataByKey(h.ID, key)
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to unset metadata for host %s, error %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("unable to unset metadata for host %s, error %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Set metadata for host %s", h.Name)
@@ -558,7 +556,7 @@ func (h *Host) ClearMetadata(client *Client) (err error) {
 
 	err = client.DeleteMetadata(h.ID)
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to clear metadata for host %s, error %s", h.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("unable to clear metadata for host %s, error %s", h.Name, err.Error()))
 	}
 
 	log.Debugf("Cleared metadata for host %s", h.Name)

@@ -2,12 +2,10 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"sync"
-
 	"github.com/go-resty/resty"
 	log "github.com/sirupsen/logrus"
+	"sync"
 )
 
 type HostCluster struct {
@@ -30,7 +28,7 @@ func (c *Client) GetHostClusterByName(clustername string) (*HostCluster, error) 
 	queryRes, err := c.Find("clusters", "name", "eq", clustername)
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("cannot find hostc luster: %s, error: %s", clustername, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("cannot find hostc luster: %s, error: %s", clustername, err.Error()))
 	}
 
 	if queryRes == nil {
@@ -41,11 +39,11 @@ func (c *Client) GetHostClusterByName(clustername string) (*HostCluster, error) 
 
 	err = json.Unmarshal(*queryRes, &hostclusters)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("unable to decode host cluster: %s query result, error: %s", clustername, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("unable to decode host cluster: %s query result, error: %s", clustername, err.Error()))
 	}
 
 	if len(hostclusters) == 0 {
-		return nil, errors.New(fmt.Sprintf("host cluster %s not found", clustername))
+		return nil, fmt.Errorf(fmt.Sprintf("host cluster %s not found", clustername))
 	}
 
 	return &hostclusters[0], nil
@@ -69,11 +67,11 @@ func (c *Client) GetAllHostClusters() (*[]HostCluster, error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New("error getting hosts collection")
+		return nil, fmt.Errorf("error getting hosts collection")
 	}
 
 	if num := result.ApiMetadata["number_of_objects"]; num == nil {
-		return nil, errors.New("cannot parse metadata for number_of_objects field")
+		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	} else {
 		if num == float64(0) {
 			log.Infof("host clusters collection is empty")
@@ -84,7 +82,7 @@ func (c *Client) GetAllHostClusters() (*[]HostCluster, error) {
 	var hosts []HostCluster
 	err = json.Unmarshal(*result.ApiResult, &hosts)
 	if err != nil {
-		return nil, errors.New("error getting host clusters collection")
+		return nil, fmt.Errorf("error getting host clusters collection")
 	}
 
 	log.Debugf("Successfully fetched host clusters collection")
@@ -111,12 +109,12 @@ func (hc *HostCluster) Create(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating host cluster: %s,  %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error creating host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &hc)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating host cluster: %s,  %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error creating host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully created host cluster %s", hc.Name)
@@ -132,13 +130,13 @@ func (hc *HostCluster) Delete(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error deleting host cluster: %s,  %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
 	var hostcluster HostCluster
 	err = json.Unmarshal(*result.ApiResult, &hostcluster)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error deleting host cluster: %s,  %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully deleted host cluster %s", hc.Name)
@@ -154,12 +152,12 @@ func (hc *HostCluster) Get(client *Client) (host *Host, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host cluster: %s,  %s", hc.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &host)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host cluster: %s,  %s", hc.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully fetched host cluster %s", hc.Name)
@@ -178,13 +176,13 @@ func (hc *HostCluster) AddHost(client *Client, hostID uint64) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding hostID %d to host cluster: %s %s", hostID, hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding hostID %d to host cluster: %s %s", hostID, hc.Name, err.Error()))
 	}
 
 	var newport Port
 	err = json.Unmarshal(*result.ApiResult, &newport)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding hostID %d to host cluster: %s %s", hostID, hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding hostID %d to host cluster: %s %s", hostID, hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully added hostID %d to host cluster %s", hostID, hc.Name)
@@ -200,12 +198,12 @@ func (hc *HostCluster) GetHosts(client *Client) (hosts *[]Host, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host cluster: %s hosts,  %s", hc.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s hosts,  %s", hc.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &hosts)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host cluster: %s hosts,  %s", hc.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s hosts,  %s", hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully fetched host cluster %s hosts", hc.Name)
@@ -221,13 +219,13 @@ func (hc *HostCluster) DeleteHost(client *Client, hostID uint64) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error removing hostID %d from host cluster: %s %s", hostID, hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error removing hostID %d from host cluster: %s %s", hostID, hc.Name, err.Error()))
 	}
 
 	var newport Port
 	err = json.Unmarshal(*result.ApiResult, &newport)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error removing hostID %d from host cluster: %s %s", hostID, hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error removing hostID %d from host cluster: %s %s", hostID, hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully deleted hostID %d from host cluster %s", hostID, hc.Name)
@@ -253,13 +251,13 @@ func (hc *HostCluster) AddLUN(client *Client, lun *Lun) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding lun to host cluster: %s %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding lun to host cluster: %s %s", hc.Name, err.Error()))
 	}
 
 	var newlun Lun
 	err = json.Unmarshal(*result.ApiResult, &newlun)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error adding lun to host cluster: %s %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("error adding lun to host cluster: %s %s", hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully added new LUN %+v to host cluster %s", newlun, hc.Name)
@@ -278,12 +276,12 @@ func (hc *HostCluster) GetLUNs(client *Client) (luns *[]Lun, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host cluster: %s luns,  %s", hc.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s luns,  %s", hc.Name, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &luns)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting host cluster: %s luns,  %s", hc.Name, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s luns,  %s", hc.Name, err.Error()))
 	}
 
 	log.Debugf("Successfully fetched host cluster %s LUNs", hc.Name)
@@ -299,12 +297,12 @@ func (hc *HostCluster) DeleteLUN(client *Client, lunID int) (lun *Lun, err error
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting host cluster: %s lun ID %d ,  %s", hc.Name, lunID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s lun ID %d ,  %s", hc.Name, lunID, err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &lun)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting host cluster: %s lun ID %d,  %s", hc.Name, lunID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s lun ID %d,  %s", hc.Name, lunID, err.Error()))
 	}
 
 	log.Debugf("Successfully deleted host cluster %s LUN %d", hc.Name, lunID)
@@ -317,7 +315,7 @@ func (hc *HostCluster) SetMetadata(client *Client, key string, value string) (er
 
 	err = client.AddMetadata(&Metadata{ObjectID: hc.ID, Key: key, Value: value})
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to set metadata for host cluster %s, error %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("unable to set metadata for host cluster %s, error %s", hc.Name, err.Error()))
 	}
 
 	return nil
@@ -329,7 +327,7 @@ func (hc *HostCluster) GetMetadata(client *Client, key string) (metadata *[]Meta
 
 	metadata, err = client.GetMetadataByObject(hc.ID)
 	if err != nil {
-		return metadata, errors.New(fmt.Sprintf("unable to get metadata for host cluster %s, error %s", hc.Name, err.Error()))
+		return metadata, fmt.Errorf(fmt.Sprintf("unable to get metadata for host cluster %s, error %s", hc.Name, err.Error()))
 	}
 
 	return metadata, nil
@@ -341,7 +339,7 @@ func (hc *HostCluster) GetMetadataValue(client *Client, key string) (value inter
 
 	metadata, err := client.GetMetadataByObjectAndKey(hc.ID, key)
 	if err != nil {
-		return value, errors.New(fmt.Sprintf("unable to get metadata for host cluster %s, error %s", hc.Name, err.Error()))
+		return value, fmt.Errorf(fmt.Sprintf("unable to get metadata for host cluster %s, error %s", hc.Name, err.Error()))
 	}
 
 	value = metadata.Value
@@ -355,7 +353,7 @@ func (hc *HostCluster) UnSetMetadata(client *Client, key string) (err error) {
 
 	err = client.DeleteMetadataByKey(hc.ID, key)
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to unset metadata for host cluster %s, error %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("unable to unset metadata for host cluster %s, error %s", hc.Name, err.Error()))
 	}
 
 	return nil
@@ -367,7 +365,7 @@ func (hc *HostCluster) ClearMetadata(client *Client) (err error) {
 
 	err = client.DeleteMetadata(hc.ID)
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to clear metadata for host %s, error %s", hc.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("unable to clear metadata for host %s, error %s", hc.Name, err.Error()))
 	}
 
 	return nil

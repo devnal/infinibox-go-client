@@ -3,13 +3,11 @@ package infinibox
 import (
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"net/url"
-	"time"
-
 	"github.com/go-resty/resty"
 	log "github.com/sirupsen/logrus"
+	"net/url"
+	"time"
 )
 
 //Config reprents client configuration struct
@@ -131,7 +129,7 @@ func (c *Client) SetTenant(tenantname string) error {
 func CheckAPIResponse(res *resty.Response, err error) (apiresponse *ApiResponse, er error) {
 	defer func() {
 		if recovered := recover(); recovered != nil && er == nil {
-			er = errors.New("panic occured while parsing management api response " + fmt.Sprint(recovered) + "for request " + res.Request.URL)
+			er = fmt.Errorf("panic occured while parsing management api response " + fmt.Sprint(recovered) + "for request " + res.Request.URL)
 		}
 	}()
 
@@ -140,7 +138,7 @@ func CheckAPIResponse(res *resty.Response, err error) (apiresponse *ApiResponse,
 	}
 
 	if res.StatusCode() == 500 {
-		return nil, errors.New(res.Status())
+		return nil, fmt.Errorf(res.Status())
 	}
 
 	if er := json.Unmarshal(res.Body(), &apiresponse); er != nil {

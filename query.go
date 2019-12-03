@@ -3,7 +3,6 @@ package infinibox
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/go-resty/resty"
 	log "github.com/sirupsen/logrus"
 )

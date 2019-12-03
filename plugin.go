@@ -2,9 +2,7 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,7 +44,7 @@ func (c *Client) GetPlugintByName(pluginname string) (*Plugin, error) {
 	queryRes, err := c.Find("plugins", "name", "eq", pluginname)
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("cannot find plugin by name: %s, error: %s", pluginname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("cannot find plugin by name: %s, error: %s", pluginname, err.Error()))
 	}
 
 	if queryRes == nil {
@@ -57,11 +55,11 @@ func (c *Client) GetPlugintByName(pluginname string) (*Plugin, error) {
 
 	err = json.Unmarshal(*queryRes, &plugins)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("unable to decode plugins collection: %s query result, error: %s", pluginname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("unable to decode plugins collection: %s query result, error: %s", pluginname, err.Error()))
 	}
 
 	if len(plugins) == 0 {
-		return nil, errors.New(fmt.Sprintf("plugin %s not found", pluginname))
+		return nil, fmt.Errorf(fmt.Sprintf("plugin %s not found", pluginname))
 	}
 
 	log.Debugf("Found plugin %#v", &plugins[0])
@@ -78,12 +76,12 @@ func (p *Plugin) Create(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating plugin: %s,  %v", p.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error creating plugin: %s,  %v", p.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &p)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating plugin: %s,  %v", p.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error creating plugin: %s,  %v", p.Name, err))
 	}
 
 	log.Debugf("Successfully created plugin %s", p.Name)
@@ -99,12 +97,12 @@ func (p *Plugin) Delete(client *Client) (plugin *Plugin, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting plugin: %s,  %v", p.Name, err))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting plugin: %s,  %v", p.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &plugin)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting plugin: %s,  %v", p.Name, err))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting plugin: %s,  %v", p.Name, err))
 	}
 
 	log.Debugf("Successfully deleted plugin %s", p.Name)
@@ -122,12 +120,12 @@ func (p *Plugin) updateAttributes(client *Client, attributesMap map[string]inter
 
 		result, err := CheckAPIResponse(response, err)
 		if err != nil {
-			return errors.New(fmt.Sprintf("error updating plugin: %s,  %v", p.Name, err))
+			return fmt.Errorf(fmt.Sprintf("error updating plugin: %s,  %v", p.Name, err))
 		}
 
 		err = json.Unmarshal(*result.ApiResult, &p)
 		if err != nil {
-			return errors.New(fmt.Sprintf("error updating plugin: %s,  %v", p.Name, err))
+			return fmt.Errorf(fmt.Sprintf("error updating plugin: %s,  %v", p.Name, err))
 		}
 	}
 
@@ -143,7 +141,7 @@ func (p *Plugin) UpdateName(client *Client, name string) error {
 	attributesMap := map[string]interface{}{"name": name}
 	err := p.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to rename plugin %s, %s", p.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to rename plugin %s, %s", p.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully renamed plugin %s to %s", p.Name, name)
@@ -161,12 +159,12 @@ func (p *Plugin) SendPluginHeartbeat(client *Client, heartbeat Heartbeat) error 
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error sending plugin heartbeat: %s,  %v", p.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error sending plugin heartbeat: %s,  %v", p.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &heartbeat)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error sending plugin heartbeat: %s,  %v", p.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error sending plugin heartbeat: %s,  %v", p.Name, err))
 	}
 
 	log.Debugf("Succesfully sent plugin heartbeat %s to %s", p.Name, heartbeat)

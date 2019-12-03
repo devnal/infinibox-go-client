@@ -2,9 +2,7 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-
 	"github.com/go-resty/resty"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -101,11 +99,11 @@ func (c *Client) GetAllVolumes() (*[]Volume, error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New("error getting volumes collection")
+		return nil, fmt.Errorf("error getting volumes collection")
 	}
 
 	if num := result.ApiMetadata["number_of_objects"]; num == nil {
-		return nil, errors.New("cannot parse metadata for number_of_objects field")
+		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	} else {
 		if num == float64(0) {
 			log.Infof("volumes collection is empty")
@@ -116,7 +114,7 @@ func (c *Client) GetAllVolumes() (*[]Volume, error) {
 	var volumes []Volume
 	err = json.Unmarshal(*result.ApiResult, &volumes)
 	if err != nil {
-		return nil, errors.New("error getting volumes collection")
+		return nil, fmt.Errorf("error getting volumes collection")
 	}
 
 	log.Debugf("Got volumes collection")

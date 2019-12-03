@@ -2,9 +2,7 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-
 	log "github.com/sirupsen/logrus"
 )
 
@@ -42,11 +40,11 @@ func (c *Client) GetTenantByName(tenantname string) (*Tenant, error) {
 
 	err = json.Unmarshal(*queryRes, &tenants)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("unable to decode tenants collection: %s query result, error: %s", tenantname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("unable to decode tenants collection: %s query result, error: %s", tenantname, err.Error()))
 	}
 
 	if len(tenants) == 0 {
-		return nil, errors.New(fmt.Sprintf("tenant %s not found", tenantname))
+		return nil, fmt.Errorf(fmt.Sprintf("tenant %s not found", tenantname))
 	}
 
 	log.Debugf("Found tenant %#v", &tenants[0])
@@ -63,12 +61,12 @@ func (t *Tenant) Create(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating tenant: %s,  %v", t.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error creating tenant: %s,  %v", t.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &t)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating tenant: %s,  %v", t.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error creating tenant: %s,  %v", t.Name, err))
 	}
 
 	log.Debugf("Successfully created tenant %s", t.Name)
@@ -84,12 +82,12 @@ func (t *Tenant) Delete(client *Client) (tenant *Tenant, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting tenant: %s,  %v", t.Name, err))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting tenant: %s,  %v", t.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &tenant)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting tenant: %s,  %v", t.Name, err))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting tenant: %s,  %v", t.Name, err))
 	}
 
 	log.Debugf("Successfully deleted tenant %s", t.Name)
@@ -107,12 +105,12 @@ func (t *Tenant) updateAttributes(client *Client, attributesMap map[string]inter
 
 		result, err := CheckAPIResponse(response, err)
 		if err != nil {
-			return errors.New(fmt.Sprintf("error updating tenant: %s,  %v", t.Name, err))
+			return fmt.Errorf(fmt.Sprintf("error updating tenant: %s,  %v", t.Name, err))
 		}
 
 		err = json.Unmarshal(*result.ApiResult, &t)
 		if err != nil {
-			return errors.New(fmt.Sprintf("error updating tenant: %s,  %v", t.Name, err))
+			return fmt.Errorf(fmt.Sprintf("error updating tenant: %s,  %v", t.Name, err))
 		}
 	}
 
@@ -128,7 +126,7 @@ func (t *Tenant) UpdateName(client *Client, name string) error {
 	attributesMap := map[string]interface{}{"name": name}
 	err := t.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to rename tenant %s, %s", t.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to rename tenant %s, %s", t.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully renamed tenant %s to %s", t.Name, name)

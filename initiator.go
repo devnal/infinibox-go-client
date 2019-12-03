@@ -2,9 +2,7 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-
 	"github.com/go-resty/resty"
 	log "github.com/sirupsen/logrus"
 )
@@ -39,12 +37,12 @@ func (c *Client) GetAllInitiators() (initiators *[]Initiator, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting all initiators %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting all initiators %s", err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &initiators)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting all initiators, error: %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting all initiators, error: %s", err.Error()))
 	}
 
 	return initiators, nil
@@ -69,12 +67,12 @@ func (c *Client) GetInitiatorByAddress(address string) (initiator *Initiator, er
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting initiator by address %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting initiator by address %s", err.Error()))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &initiator)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting initiator by address, error: %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("error getting initiator by address, error: %s", err.Error()))
 	}
 
 	return initiator, nil

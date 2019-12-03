@@ -2,9 +2,7 @@ package infinibox
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-
 	"github.com/go-resty/resty"
 	log "github.com/sirupsen/logrus"
 )
@@ -42,7 +40,7 @@ func (c *Client) GetPoolByName(poolname string) (*Pool, error) {
 	queryRes, err := c.Find("pools", "name", "eq", poolname)
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("cannot find pool by name: %s, error: %s", poolname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("cannot find pool by name: %s, error: %s", poolname, err.Error()))
 	}
 
 	if queryRes == nil {
@@ -53,11 +51,11 @@ func (c *Client) GetPoolByName(poolname string) (*Pool, error) {
 
 	err = json.Unmarshal(*queryRes, &pools)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("unable to decode pool: %s query result, error: %s", poolname, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("unable to decode pool: %s query result, error: %s", poolname, err.Error()))
 	}
 
 	if len(pools) == 0 {
-		return nil, errors.New(fmt.Sprintf("pool %s not found", poolname))
+		return nil, fmt.Errorf(fmt.Sprintf("pool %s not found", poolname))
 	}
 
 	log.Debugf("Found pool %#v", &pools[0])
@@ -84,11 +82,11 @@ func (c *Client) GetAllPools() (*[]Pool, error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New("error getting pools collection")
+		return nil, fmt.Errorf("error getting pools collection")
 	}
 
 	if num := result.ApiMetadata["number_of_objects"]; num == nil {
-		return nil, errors.New("cannot parse metadata for number_of_objects field")
+		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	} else {
 		if num == float64(0) {
 			log.Infof("pools collection is empty")
@@ -99,7 +97,7 @@ func (c *Client) GetAllPools() (*[]Pool, error) {
 	var pools []Pool
 	err = json.Unmarshal(*result.ApiResult, &pools)
 	if err != nil {
-		return nil, errors.New("error getting pools collection")
+		return nil, fmt.Errorf("error getting pools collection")
 	}
 
 	log.Debugf("Got pools collection")
@@ -123,7 +121,7 @@ func (c *Client) GetPool(poolID int64) (*Pool, error) {
 	var pool Pool
 	err = json.Unmarshal(*result.ApiResult, &pool)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("json: %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("json: %s", err.Error()))
 	}
 
 	log.Debugf("Got pool object: %#v", pool)
@@ -152,12 +150,12 @@ func (p *Pool) Create(client *Client) (err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating pool: %s,  %v", p.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error creating pool: %s,  %v", p.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &p)
 	if err != nil {
-		return errors.New(fmt.Sprintf("error creating pool: %s,  %v", p.Name, err))
+		return fmt.Errorf(fmt.Sprintf("error creating pool: %s,  %v", p.Name, err))
 	}
 
 	log.Debugf("Successfully created pool %s", p.Name)
@@ -173,12 +171,12 @@ func (p *Pool) Delete(client *Client) (pool *Pool, err error) {
 
 	result, err := CheckAPIResponse(response, err)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting pool: %s,  %v", p.Name, err))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting pool: %s,  %v", p.Name, err))
 	}
 
 	err = json.Unmarshal(*result.ApiResult, &pool)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error deleting pool: %s,  %v", p.Name, err))
+		return nil, fmt.Errorf(fmt.Sprintf("error deleting pool: %s,  %v", p.Name, err))
 	}
 
 	log.Debugf("Successfully deleted pool %s", p.Name)
@@ -196,12 +194,12 @@ func (p *Pool) updateAttributes(client *Client, attributesMap map[string]interfa
 
 		result, err := CheckAPIResponse(response, err)
 		if err != nil {
-			return errors.New(fmt.Sprintf("error updating pool: %s,  %v", p.Name, err))
+			return fmt.Errorf(fmt.Sprintf("error updating pool: %s,  %v", p.Name, err))
 		}
 
 		err = json.Unmarshal(*result.ApiResult, &p)
 		if err != nil {
-			return errors.New(fmt.Sprintf("error updating pool: %s,  %v", p.Name, err))
+			return fmt.Errorf(fmt.Sprintf("error updating pool: %s,  %v", p.Name, err))
 		}
 	}
 
@@ -217,7 +215,7 @@ func (p *Pool) UpdateName(client *Client, name string) error {
 	attributesMap := map[string]interface{}{"name": name}
 	err := p.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to rename pool %s, %s", p.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to rename pool %s, %s", p.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully renamed pool %s to %s", p.Name, name)
@@ -232,7 +230,7 @@ func (p *Pool) UpdatePhysicalCapacity(client *Client, capacity uint64) error {
 	attributesMap := map[string]interface{}{"physical_capacity": capacity}
 	err := p.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to update pool %s PhysicalCapacity, %s", p.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to update pool %s PhysicalCapacity, %s", p.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully updated pool %s PhysicalCapacity to %d", p.Name, capacity)
@@ -247,7 +245,7 @@ func (p *Pool) UpdateVirtualCapacity(client *Client, capacity uint64) error {
 	attributesMap := map[string]interface{}{"virtual_capacity": capacity}
 	err := p.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to update pool %s VirtualCapacity, %s", p.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to update pool %s VirtualCapacity, %s", p.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully updated pool %s VirtualCapacity to %d", p.Name, capacity)
@@ -262,7 +260,7 @@ func (p *Pool) UpdateSsdEnabled(client *Client, enabled bool) error {
 	attributesMap := map[string]interface{}{"ssd_enabled": enabled}
 	err := p.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to update pool %s SsdEnabled, %s", p.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to update pool %s SsdEnabled, %s", p.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully updated pool %s SsdEnabled to %v", p.Name, enabled)
@@ -277,7 +275,7 @@ func (p *Pool) UpdateCompressionEnabled(client *Client, enabled bool) error {
 	attributesMap := map[string]interface{}{"compression_enabled": enabled}
 	err := p.updateAttributes(client, attributesMap)
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to update pool %s CompressionEnabled, %s", p.Name, err.Error()))
+		return fmt.Errorf(fmt.Sprintf("failed to update pool %s CompressionEnabled, %s", p.Name, err.Error()))
 	}
 
 	log.Debugf("Succesfully updated pool %s CompressionEnabled to %v", p.Name, enabled)
