@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Volume represnts struct
+//Volume represents IBOX volume struct
 type Volume struct {
 	CgID                  int64       `json:"cg_id"`
 	RmrTarget             bool        `json:"rmr_target"`
@@ -102,13 +102,14 @@ func (c *Client) GetAllVolumes() (*[]Volume, error) {
 		return nil, fmt.Errorf("error getting volumes collection")
 	}
 
-	if num := result.ApiMetadata["number_of_objects"]; num == nil {
+	num := result.ApiMetadata["number_of_objects"]
+
+	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
-	} else {
-		if num == float64(0) {
-			log.Infof("volumes collection is empty")
-			return nil, nil
-		}
+	}
+	if num == float64(0) {
+		log.Infof("volumes collection is empty")
+		return nil, nil
 	}
 
 	var volumes []Volume

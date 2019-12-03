@@ -85,13 +85,13 @@ func (c *Client) GetAllPools() (*[]Pool, error) {
 		return nil, fmt.Errorf("error getting pools collection")
 	}
 
-	if num := result.ApiMetadata["number_of_objects"]; num == nil {
+	num := result.ApiMetadata["number_of_objects"]
+	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
-	} else {
-		if num == float64(0) {
-			log.Infof("pools collection is empty")
-			return nil, nil
-		}
+	}
+	if num == float64(0) {
+		log.Infof("pools collection is empty")
+		return nil, nil
 	}
 
 	var pools []Pool

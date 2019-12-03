@@ -25,13 +25,13 @@ func (c *Client) GetAllMetadata() (*[]Metadata, error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting all metadata, %s", err.Error()))
 	}
 
-	if num := result.ApiMetadata["number_of_objects"]; num == nil {
+	num := result.ApiMetadata["number_of_objects"]
+	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
-	} else {
-		if num == float64(0) {
-			log.Debugln("metadata is empty")
-			return nil, nil
-		}
+	}
+	if num == float64(0) {
+		log.Debugln("metadata is empty")
+		return nil, nil
 	}
 
 	var allMetadata []Metadata
@@ -55,19 +55,19 @@ func (c *Client) GetMetadataByObject(objectID int64) (*[]Metadata, error) {
 		return nil, fmt.Errorf(fmt.Sprintf("Getting metadata by objectID %d, %s", objectID, err.Error()))
 	}
 
-	if num := result.ApiMetadata["number_of_objects"]; num == nil {
+	num := result.ApiMetadata["number_of_objects"]
+	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
-	} else {
-		if num == float64(0) {
-			log.Infof("metadata is empty")
-			return nil, nil
-		}
+	}
+	if num == float64(0) {
+		log.Infof("metadata is empty")
+		return nil, nil
 	}
 
 	var objectMetadata []Metadata
 	err = json.Unmarshal(*result.ApiResult, &objectMetadata)
 	if err != nil {
-		return nil, fmt.Errorf(fmt.Sprintf("Getting metadata by objectID %s, %s", objectID, err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("Getting metadata by objectID %d, %s", objectID, err.Error()))
 	}
 
 	return &objectMetadata, nil
