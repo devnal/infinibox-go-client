@@ -13,9 +13,9 @@ func (c *Client) Find(collection string, param string, op string, value string) 
 
 	var request *resty.Request
 
-	if c.config.Tenant != "" {
-		log.Debugf("Adding tenant_id %d to request", c.config.Tenant)
-		request = c.RestClient.R().SetQueryParam("tenant_id", c.config.Tenant)
+	if c.config.tenant != "" {
+		log.Debugf("Adding tenant_id %d to request", c.config.tenant)
+		request = c.RestClient.R().SetQueryParam("tenant_id", c.config.tenant)
 	} else {
 		request = c.RestClient.R()
 	}

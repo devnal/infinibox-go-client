@@ -26,9 +26,9 @@ func (c *Client) GetAllInitiators() (initiators *[]Initiator, err error) {
 	url := "api/rest/initiators"
 	var request *resty.Request
 
-	if c.config.Tenant != "" {
-		log.Debugf("Adding tenant_id %d to request", &c.config.Tenant)
-		request = c.RestClient.R().SetQueryParam("tenant_id", c.config.Tenant)
+	if c.config.tenant != "" {
+		log.Debugf("Adding tenant_id %d to request", &c.config.tenant)
+		request = c.RestClient.R().SetQueryParam("tenant_id", c.config.tenant)
 	} else {
 		request = c.RestClient.R()
 	}
@@ -56,9 +56,9 @@ func (c *Client) GetInitiatorByAddress(address string) (initiator *Initiator, er
 
 	var request *resty.Request
 
-	if c.config.Tenant != "" {
-		log.Debugf("Adding tenant_id %d to request", &c.config.Tenant)
-		request = c.RestClient.R().SetHeader("X-INFINIDAT-TENANT-ID", c.config.Tenant)
+	if c.config.tenant != "" {
+		log.Debugf("Adding tenant_id %d to request", &c.config.tenant)
+		request = c.RestClient.R().SetHeader("X-INFINIDAT-TENANT-ID", c.config.tenant)
 	} else {
 		request = c.RestClient.R()
 	}

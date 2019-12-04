@@ -56,9 +56,9 @@ func (c *Client) GetAllHostClusters() (*[]HostCluster, error) {
 	url := "api/rest/clusters"
 	var request *resty.Request
 
-	if c.config.Tenant != "" {
-		log.Debugf("Adding tenant_id %d to request", &c.config.Tenant)
-		request = c.RestClient.R().SetHeader("X-INFINIDAT-TENANT-ID", c.config.Tenant)
+	if c.config.tenant != "" {
+		log.Debugf("Adding tenant_id %d to request", &c.config.tenant)
+		request = c.RestClient.R().SetHeader("X-INFINIDAT-TENANT-ID", c.config.tenant)
 	} else {
 		request = c.RestClient.R()
 	}
@@ -98,9 +98,9 @@ func (hc *HostCluster) Create(client *Client) (err error) {
 	url := "api/rest/clusters"
 	var request *resty.Request
 
-	if client.config.Tenant != "" {
-		log.Debugf("Adding tenant_id %d to request", client.config.Tenant)
-		request = client.RestClient.R().SetHeader("X-INFINIDAT-TENANT-ID", client.config.Tenant)
+	if client.config.tenant != "" {
+		log.Debugf("Adding tenant_id %d to request", client.config.tenant)
+		request = client.RestClient.R().SetHeader("X-INFINIDAT-TENANT-ID", client.config.tenant)
 	} else {
 		request = client.RestClient.R()
 	}

@@ -15,7 +15,7 @@ type Config struct {
 	Username string
 	Password string
 	URL      string
-	Tenant   string
+	tenant   string
 	Debug    bool
 }
 
@@ -112,6 +112,7 @@ func (c *Client) Login() error {
 	return nil
 }
 
+//SetTenant client method sets tenant id for provided tenant
 func (c *Client) SetTenant(tenantname string) error {
 
 	log.Debugf("Setting tenant: %s", tenantname)
@@ -125,7 +126,7 @@ func (c *Client) SetTenant(tenantname string) error {
 	}
 	if tenant != nil {
 		log.Debugf("Setting tenant id to: %d", tenant.ID)
-		c.config.Tenant = fmt.Sprintf("%d", tenant.ID)
+		c.config.tenant = fmt.Sprintf("%d", tenant.ID)
 	}
 	return nil
 
