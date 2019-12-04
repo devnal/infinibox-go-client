@@ -33,7 +33,7 @@ func (c *Client) Find(collection string, param string, op string, value string) 
 		return nil, err
 	}
 
-	queryRes = apiResult.ApiResult
+	queryRes = apiResult.APIResult
 
 	return queryRes, nil
 }

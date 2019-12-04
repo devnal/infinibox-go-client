@@ -92,7 +92,7 @@ func (c *Client) GetAllHosts() (*[]Host, error) {
 		return nil, fmt.Errorf("error getting hosts collection")
 	}
 
-	num := result.ApiMetadata["number_of_objects"]
+	num := result.APIMetadata["number_of_objects"]
 	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	}
@@ -102,7 +102,7 @@ func (c *Client) GetAllHosts() (*[]Host, error) {
 	}
 
 	var hosts []Host
-	err = json.Unmarshal(*result.ApiResult, &hosts)
+	err = json.Unmarshal(*result.APIResult, &hosts)
 	if err != nil {
 		return nil, fmt.Errorf("error getting hosts collection")
 	}
@@ -114,7 +114,7 @@ func (c *Client) GetAllHosts() (*[]Host, error) {
 
 func (c *Client) GetHost(hostID int64) (*Host, error) {
 
-	log.Debugf("Getting host object ID: %s", hostID)
+	log.Debugf("Getting host object ID: %d", hostID)
 
 	url := fmt.Sprintf("api/rest/hosts/%d", hostID)
 
@@ -126,7 +126,7 @@ func (c *Client) GetHost(hostID int64) (*Host, error) {
 	}
 
 	var host Host
-	err = json.Unmarshal(*result.ApiResult, &host)
+	err = json.Unmarshal(*result.APIResult, &host)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("json: %s", err.Error()))
 	}
@@ -161,7 +161,7 @@ func (c *Client) GetHostIDbyInitiatorAddress(address string) (ID int64, err erro
 
 	var hosts []Host
 
-	err = json.Unmarshal(*result.ApiResult, &hosts)
+	err = json.Unmarshal(*result.APIResult, &hosts)
 	if err != nil {
 		return -1, fmt.Errorf(fmt.Sprintf("json: %s", err.Error()))
 	}
@@ -222,7 +222,7 @@ func (h *Host) Create(client *Client) (err error) {
 		return fmt.Errorf(fmt.Sprintf("error creating host: %s,  %s", h.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &h)
+	err = json.Unmarshal(*result.APIResult, &h)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error creating host: %s,  %s", h.Name, err.Error()))
 	}
@@ -245,7 +245,7 @@ func (h *Host) Delete(client *Client) (err error) {
 	}
 
 	var host Host
-	err = json.Unmarshal(*result.ApiResult, &host)
+	err = json.Unmarshal(*result.APIResult, &host)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error deleting host: %s,  %s", h.Name, err.Error()))
 	}
@@ -267,7 +267,7 @@ func (h *Host) Get(client *Client) (host *Host, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s,  %s", h.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &host)
+	err = json.Unmarshal(*result.APIResult, &host)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s,  %s", h.Name, err.Error()))
 	}
@@ -289,7 +289,7 @@ func (h *Host) GetPorts(client *Client) (ports *[]Port, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s ports,  %s", h.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &ports)
+	err = json.Unmarshal(*result.APIResult, &ports)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s ports,  %s", h.Name, err.Error()))
 	}
@@ -338,7 +338,7 @@ func (h *Host) Update(client *Client) (err error) {
 		return fmt.Errorf(fmt.Sprintf("error updating host: %s,  %s", h.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &h)
+	err = json.Unmarshal(*result.APIResult, &h)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error updating host: %s,  %s", h.Name, err.Error()))
 	}
@@ -365,7 +365,7 @@ func (h *Host) AddPort(client *Client, port *Port) (err error) {
 	}
 
 	var newport Port
-	err = json.Unmarshal(*result.ApiResult, &newport)
+	err = json.Unmarshal(*result.APIResult, &newport)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error adding port to host: %s %s", h.Name, err.Error()))
 	}
@@ -395,7 +395,7 @@ func (h *Host) AddLUN(client *Client, lun *Lun) (err error) {
 	}
 
 	var newlun Lun
-	err = json.Unmarshal(*result.ApiResult, &newlun)
+	err = json.Unmarshal(*result.APIResult, &newlun)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error adding lun to host: %s %s", h.Name, err.Error()))
 	}
@@ -417,7 +417,7 @@ func (h *Host) GetLUNs(client *Client) (luns *[]Lun, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s luns,  %s", h.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &luns)
+	err = json.Unmarshal(*result.APIResult, &luns)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s luns,  %s", h.Name, err.Error()))
 	}
@@ -439,7 +439,7 @@ func (h *Host) GetLUN(client *Client, lunID int) (lun *Lun, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s lun ID %d ,  %s", h.Name, lunID, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &lun)
+	err = json.Unmarshal(*result.APIResult, &lun)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host: %s lun ID %d,  %s", h.Name, lunID, err.Error()))
 	}
@@ -461,7 +461,7 @@ func (h *Host) DeleteLUN(client *Client, lunID int) (lun *Lun, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting host: %s lun ID %d ,  %s", h.Name, lunID, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &lun)
+	err = json.Unmarshal(*result.APIResult, &lun)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting host: %s lun ID %d,  %s", h.Name, lunID, err.Error()))
 	}
@@ -483,7 +483,7 @@ func (h *Host) UnMapVolume(client *Client, volumeID uint64) (lun *Lun, err error
 		return nil, fmt.Errorf(fmt.Sprintf("error umapping volume ID %d from host: %s, %s", volumeID, h.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &lun)
+	err = json.Unmarshal(*result.APIResult, &lun)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error umapping volume ID %d from host: %s, %s", volumeID, h.Name, err.Error()))
 	}

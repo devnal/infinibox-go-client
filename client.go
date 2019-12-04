@@ -19,7 +19,8 @@ type Config struct {
 	Debug    bool
 }
 
-type ApiError struct {
+//APIError represents IBOX API response error struct
+type APIError struct {
 	Code     string
 	Message  string
 	Reasons  []interface{}
@@ -28,7 +29,8 @@ type ApiError struct {
 	Data     interface{}
 }
 
-type ApiMetadata struct {
+//APIMetadata represents IBOX API response metadata struct
+type APIMetadata struct {
 	Ready           bool `json:"ready"`
 	Page            int  `json:"page,omitempty"`
 	NumberOfObjects int  `json:"numberofobjects,omitempty"`
@@ -36,17 +38,20 @@ type ApiMetadata struct {
 	PagesTotal      int  `json:"pagestotal,omitempty"`
 }
 
-type ApiResponse struct {
-	ApiError    map[string]interface{} `json:"error"`
-	ApiMetadata map[string]interface{} `json:"metadata"`
-	ApiResult   *json.RawMessage       `json:"result"`
+//APIResponse represents IBOX API response composite struct
+type APIResponse struct {
+	APIError    map[string]interface{} `json:"error"`
+	APIMetadata map[string]interface{} `json:"metadata"`
+	APIResult   *json.RawMessage       `json:"result"`
 }
 
+//Client represents client struct
 type Client struct {
 	RestClient *resty.Client
 	config     *Config
 }
 
+//NewClient function generates new client instance
 func NewClient(config *Config) (*Client, error) {
 	restClient, err := restyBasicClient(config)
 	if err != nil {
@@ -85,6 +90,7 @@ func restyBasicClient(config *Config) (*resty.Client, error) {
 	return restclient, nil
 }
 
+//Login provides client login method
 func (c *Client) Login() error {
 
 	log.Debug("Logging into infinibox")
@@ -118,7 +124,7 @@ func (c *Client) SetTenant(tenantname string) error {
 		return err
 	}
 	if tenant != nil {
-		log.Debugf("Setting tenant id to: %v", tenant.ID)
+		log.Debugf("Setting tenant id to: %d", tenant.ID)
 		c.config.Tenant = fmt.Sprintf("%d", tenant.ID)
 	}
 	return nil
@@ -126,7 +132,7 @@ func (c *Client) SetTenant(tenantname string) error {
 }
 
 //CheckAPIResponse parses API response for error and result
-func CheckAPIResponse(res *resty.Response, err error) (apiresponse *ApiResponse, er error) {
+func CheckAPIResponse(res *resty.Response, err error) (apiresponse *APIResponse, er error) {
 	defer func() {
 		if recovered := recover(); recovered != nil && er == nil {
 			er = fmt.Errorf("panic occured while parsing management api response " + fmt.Sprint(recovered) + "for request " + res.Request.URL)
@@ -146,15 +152,15 @@ func CheckAPIResponse(res *resty.Response, err error) (apiresponse *ApiResponse,
 		return nil, er
 	}
 
-	if apiresponse.ApiError != nil {
+	if apiresponse.APIError != nil {
 		code := ""
 		message := ""
 
-		if _, ok := apiresponse.ApiError["code"].(string); ok {
-			code = apiresponse.ApiError["code"].(string)
+		if _, ok := apiresponse.APIError["code"].(string); ok {
+			code = apiresponse.APIError["code"].(string)
 		}
-		if _, ok := apiresponse.ApiError["message"].(string); ok {
-			message = apiresponse.ApiError["message"].(string)
+		if _, ok := apiresponse.APIError["message"].(string); ok {
+			message = apiresponse.APIError["message"].(string)
 		}
 		return nil, fmt.Errorf("{API ERRROR CODE: %s}, {API ERROR MESSAGE: %s}", code, message)
 	}

@@ -64,7 +64,7 @@ func (t *Tenant) Create(client *Client) (err error) {
 		return fmt.Errorf(fmt.Sprintf("error creating tenant: %s,  %v", t.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &t)
+	err = json.Unmarshal(*result.APIResult, &t)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error creating tenant: %s,  %v", t.Name, err))
 	}
@@ -85,7 +85,7 @@ func (t *Tenant) Delete(client *Client) (tenant *Tenant, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting tenant: %s,  %v", t.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &tenant)
+	err = json.Unmarshal(*result.APIResult, &tenant)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting tenant: %s,  %v", t.Name, err))
 	}
@@ -108,7 +108,7 @@ func (t *Tenant) updateAttributes(client *Client, attributesMap map[string]inter
 			return fmt.Errorf(fmt.Sprintf("error updating tenant: %s,  %v", t.Name, err))
 		}
 
-		err = json.Unmarshal(*result.ApiResult, &t)
+		err = json.Unmarshal(*result.APIResult, &t)
 		if err != nil {
 			return fmt.Errorf(fmt.Sprintf("error updating tenant: %s,  %v", t.Name, err))
 		}

@@ -85,7 +85,7 @@ func (c *Client) GetAllPools() (*[]Pool, error) {
 		return nil, fmt.Errorf("error getting pools collection")
 	}
 
-	num := result.ApiMetadata["number_of_objects"]
+	num := result.APIMetadata["number_of_objects"]
 	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	}
@@ -95,7 +95,7 @@ func (c *Client) GetAllPools() (*[]Pool, error) {
 	}
 
 	var pools []Pool
-	err = json.Unmarshal(*result.ApiResult, &pools)
+	err = json.Unmarshal(*result.APIResult, &pools)
 	if err != nil {
 		return nil, fmt.Errorf("error getting pools collection")
 	}
@@ -119,7 +119,7 @@ func (c *Client) GetPool(poolID int64) (*Pool, error) {
 	}
 
 	var pool Pool
-	err = json.Unmarshal(*result.ApiResult, &pool)
+	err = json.Unmarshal(*result.APIResult, &pool)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("json: %s", err.Error()))
 	}
@@ -153,7 +153,7 @@ func (p *Pool) Create(client *Client) (err error) {
 		return fmt.Errorf(fmt.Sprintf("error creating pool: %s,  %v", p.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &p)
+	err = json.Unmarshal(*result.APIResult, &p)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error creating pool: %s,  %v", p.Name, err))
 	}
@@ -174,7 +174,7 @@ func (p *Pool) Delete(client *Client) (pool *Pool, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting pool: %s,  %v", p.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &pool)
+	err = json.Unmarshal(*result.APIResult, &pool)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting pool: %s,  %v", p.Name, err))
 	}
@@ -197,7 +197,7 @@ func (p *Pool) updateAttributes(client *Client, attributesMap map[string]interfa
 			return fmt.Errorf(fmt.Sprintf("error updating pool: %s,  %v", p.Name, err))
 		}
 
-		err = json.Unmarshal(*result.ApiResult, &p)
+		err = json.Unmarshal(*result.APIResult, &p)
 		if err != nil {
 			return fmt.Errorf(fmt.Sprintf("error updating pool: %s,  %v", p.Name, err))
 		}

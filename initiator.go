@@ -40,7 +40,7 @@ func (c *Client) GetAllInitiators() (initiators *[]Initiator, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting all initiators %s", err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &initiators)
+	err = json.Unmarshal(*result.APIResult, &initiators)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting all initiators, error: %s", err.Error()))
 	}
@@ -70,7 +70,7 @@ func (c *Client) GetInitiatorByAddress(address string) (initiator *Initiator, er
 		return nil, fmt.Errorf(fmt.Sprintf("error getting initiator by address %s", err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &initiator)
+	err = json.Unmarshal(*result.APIResult, &initiator)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting initiator by address, error: %s", err.Error()))
 	}

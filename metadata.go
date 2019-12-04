@@ -25,7 +25,7 @@ func (c *Client) GetAllMetadata() (*[]Metadata, error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting all metadata, %s", err.Error()))
 	}
 
-	num := result.ApiMetadata["number_of_objects"]
+	num := result.APIMetadata["number_of_objects"]
 	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	}
@@ -35,7 +35,7 @@ func (c *Client) GetAllMetadata() (*[]Metadata, error) {
 	}
 
 	var allMetadata []Metadata
-	err = json.Unmarshal(*result.ApiResult, &allMetadata)
+	err = json.Unmarshal(*result.APIResult, &allMetadata)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting all metadata, %s", err.Error()))
 	}
@@ -55,7 +55,7 @@ func (c *Client) GetMetadataByObject(objectID int64) (*[]Metadata, error) {
 		return nil, fmt.Errorf(fmt.Sprintf("Getting metadata by objectID %d, %s", objectID, err.Error()))
 	}
 
-	num := result.ApiMetadata["number_of_objects"]
+	num := result.APIMetadata["number_of_objects"]
 	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	}
@@ -65,7 +65,7 @@ func (c *Client) GetMetadataByObject(objectID int64) (*[]Metadata, error) {
 	}
 
 	var objectMetadata []Metadata
-	err = json.Unmarshal(*result.ApiResult, &objectMetadata)
+	err = json.Unmarshal(*result.APIResult, &objectMetadata)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("Getting metadata by objectID %d, %s", objectID, err.Error()))
 	}
@@ -86,7 +86,7 @@ func (c *Client) GetMetadataByObjectAndKey(objectID int64, key string) (*Metadat
 	}
 
 	var objectMetadata Metadata
-	err = json.Unmarshal(*result.ApiResult, &objectMetadata)
+	err = json.Unmarshal(*result.APIResult, &objectMetadata)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("Getting metadata by objectID %d and key %s, %s", objectID, key, err.Error()))
 	}
@@ -108,7 +108,7 @@ func (c *Client) AddMetadata(metadata *Metadata) error {
 	}
 
 	var objectMetadata []Metadata
-	err = json.Unmarshal(*result.ApiResult, &objectMetadata)
+	err = json.Unmarshal(*result.APIResult, &objectMetadata)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Adding metadata for objectID %d failed, %s", metadata.ObjectID, err.Error()))
 	}
@@ -130,7 +130,7 @@ func (c *Client) DeleteMetadata(objectID int64) error {
 	}
 
 	var objectMetadata []Metadata
-	err = json.Unmarshal(*result.ApiResult, &objectMetadata)
+	err = json.Unmarshal(*result.APIResult, &objectMetadata)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Deleting metadata for objectID %d failed, %s", objectID, err.Error()))
 	}
@@ -152,7 +152,7 @@ func (c *Client) DeleteMetadataByKey(objectID int64, key string) error {
 	}
 
 	var objectMetadata []Metadata
-	err = json.Unmarshal(*result.ApiResult, &objectMetadata)
+	err = json.Unmarshal(*result.APIResult, &objectMetadata)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Deleting metadata for objectID %d and key %s failed, %s", objectID, key, err.Error()))
 	}

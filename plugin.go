@@ -79,7 +79,7 @@ func (p *Plugin) Create(client *Client) (err error) {
 		return fmt.Errorf(fmt.Sprintf("error creating plugin: %s,  %v", p.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &p)
+	err = json.Unmarshal(*result.APIResult, &p)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error creating plugin: %s,  %v", p.Name, err))
 	}
@@ -100,7 +100,7 @@ func (p *Plugin) Delete(client *Client) (plugin *Plugin, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting plugin: %s,  %v", p.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &plugin)
+	err = json.Unmarshal(*result.APIResult, &plugin)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting plugin: %s,  %v", p.Name, err))
 	}
@@ -123,7 +123,7 @@ func (p *Plugin) updateAttributes(client *Client, attributesMap map[string]inter
 			return fmt.Errorf(fmt.Sprintf("error updating plugin: %s,  %v", p.Name, err))
 		}
 
-		err = json.Unmarshal(*result.ApiResult, &p)
+		err = json.Unmarshal(*result.APIResult, &p)
 		if err != nil {
 			return fmt.Errorf(fmt.Sprintf("error updating plugin: %s,  %v", p.Name, err))
 		}
@@ -162,7 +162,7 @@ func (p *Plugin) SendPluginHeartbeat(client *Client, heartbeat Heartbeat) error 
 		return fmt.Errorf(fmt.Sprintf("error sending plugin heartbeat: %s,  %v", p.Name, err))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &heartbeat)
+	err = json.Unmarshal(*result.APIResult, &heartbeat)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error sending plugin heartbeat: %s,  %v", p.Name, err))
 	}

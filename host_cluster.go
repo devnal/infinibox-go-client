@@ -70,7 +70,7 @@ func (c *Client) GetAllHostClusters() (*[]HostCluster, error) {
 		return nil, fmt.Errorf("error getting hosts collection")
 	}
 
-	num := result.ApiMetadata["number_of_objects"]
+	num := result.APIMetadata["number_of_objects"]
 	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
 	}
@@ -80,7 +80,7 @@ func (c *Client) GetAllHostClusters() (*[]HostCluster, error) {
 	}
 
 	var hosts []HostCluster
-	err = json.Unmarshal(*result.ApiResult, &hosts)
+	err = json.Unmarshal(*result.APIResult, &hosts)
 	if err != nil {
 		return nil, fmt.Errorf("error getting host clusters collection")
 	}
@@ -112,7 +112,7 @@ func (hc *HostCluster) Create(client *Client) (err error) {
 		return fmt.Errorf(fmt.Sprintf("error creating host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &hc)
+	err = json.Unmarshal(*result.APIResult, &hc)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error creating host cluster: %s,  %s", hc.Name, err.Error()))
 	}
@@ -134,7 +134,7 @@ func (hc *HostCluster) Delete(client *Client) (err error) {
 	}
 
 	var hostcluster HostCluster
-	err = json.Unmarshal(*result.ApiResult, &hostcluster)
+	err = json.Unmarshal(*result.APIResult, &hostcluster)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
@@ -155,7 +155,7 @@ func (hc *HostCluster) Get(client *Client) (host *Host, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &host)
+	err = json.Unmarshal(*result.APIResult, &host)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s,  %s", hc.Name, err.Error()))
 	}
@@ -180,7 +180,7 @@ func (hc *HostCluster) AddHost(client *Client, hostID uint64) (err error) {
 	}
 
 	var newport Port
-	err = json.Unmarshal(*result.ApiResult, &newport)
+	err = json.Unmarshal(*result.APIResult, &newport)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error adding hostID %d to host cluster: %s %s", hostID, hc.Name, err.Error()))
 	}
@@ -201,7 +201,7 @@ func (hc *HostCluster) GetHosts(client *Client) (hosts *[]Host, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s hosts,  %s", hc.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &hosts)
+	err = json.Unmarshal(*result.APIResult, &hosts)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s hosts,  %s", hc.Name, err.Error()))
 	}
@@ -223,7 +223,7 @@ func (hc *HostCluster) DeleteHost(client *Client, hostID uint64) (err error) {
 	}
 
 	var newport Port
-	err = json.Unmarshal(*result.ApiResult, &newport)
+	err = json.Unmarshal(*result.APIResult, &newport)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error removing hostID %d from host cluster: %s %s", hostID, hc.Name, err.Error()))
 	}
@@ -255,7 +255,7 @@ func (hc *HostCluster) AddLUN(client *Client, lun *Lun) (err error) {
 	}
 
 	var newlun Lun
-	err = json.Unmarshal(*result.ApiResult, &newlun)
+	err = json.Unmarshal(*result.APIResult, &newlun)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error adding lun to host cluster: %s %s", hc.Name, err.Error()))
 	}
@@ -279,7 +279,7 @@ func (hc *HostCluster) GetLUNs(client *Client) (luns *[]Lun, err error) {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s luns,  %s", hc.Name, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &luns)
+	err = json.Unmarshal(*result.APIResult, &luns)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error getting host cluster: %s luns,  %s", hc.Name, err.Error()))
 	}
@@ -300,7 +300,7 @@ func (hc *HostCluster) DeleteLUN(client *Client, lunID int) (lun *Lun, err error
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s lun ID %d ,  %s", hc.Name, lunID, err.Error()))
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &lun)
+	err = json.Unmarshal(*result.APIResult, &lun)
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("error deleting host cluster: %s lun ID %d,  %s", hc.Name, lunID, err.Error()))
 	}

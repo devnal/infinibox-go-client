@@ -102,7 +102,7 @@ func (c *Client) GetAllVolumes() (*[]Volume, error) {
 		return nil, fmt.Errorf("error getting volumes collection")
 	}
 
-	num := result.ApiMetadata["number_of_objects"]
+	num := result.APIMetadata["number_of_objects"]
 
 	if num == nil {
 		return nil, fmt.Errorf("cannot parse metadata for number_of_objects field")
@@ -113,7 +113,7 @@ func (c *Client) GetAllVolumes() (*[]Volume, error) {
 	}
 
 	var volumes []Volume
-	err = json.Unmarshal(*result.ApiResult, &volumes)
+	err = json.Unmarshal(*result.APIResult, &volumes)
 	if err != nil {
 		return nil, fmt.Errorf("error getting volumes collection")
 	}
@@ -137,7 +137,7 @@ func (c *Client) GetVolume(volumeID int64) (*Volume, error) {
 	}
 
 	var volume Volume
-	err = json.Unmarshal(*result.ApiResult, &volume)
+	err = json.Unmarshal(*result.APIResult, &volume)
 	if err != nil {
 		return nil, fmt.Errorf("error getting volume object %s", err.Error())
 	}
@@ -180,7 +180,7 @@ func (v *Volume) Create(client *Client) (err error) {
 		return fmt.Errorf("error creating volume: %s,  %s", v.Name, err.Error())
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &v)
+	err = json.Unmarshal(*result.APIResult, &v)
 	if err != nil {
 		return fmt.Errorf("error creating volume: %s,  %s", v.Name, err.Error())
 	}
@@ -202,7 +202,7 @@ func (v *Volume) Get(client *Client) (volume *Volume, err error) {
 		return nil, fmt.Errorf("error getting volume: %s,  %s", v.Name, err.Error())
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &volume)
+	err = json.Unmarshal(*result.APIResult, &volume)
 	if err != nil {
 		return nil, fmt.Errorf("error getting volume: %s,  %s", v.Name, err.Error())
 	}
@@ -225,7 +225,7 @@ func (v *Volume) GetLUNs(client *Client) (luns *[]Lun, err error) {
 		return nil, fmt.Errorf("error getting volume %s luns,  %s", v.Name, err.Error())
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &luns)
+	err = json.Unmarshal(*result.APIResult, &luns)
 
 	if err != nil {
 		return nil, fmt.Errorf("error getting volume %s luns,  %s", v.Name, err.Error())
@@ -266,7 +266,7 @@ func (v *Volume) UnMap(client *Client) (err error) {
 				}
 
 				var deletedLun Lun
-				err = json.Unmarshal(*result.ApiResult, &deletedLun)
+				err = json.Unmarshal(*result.APIResult, &deletedLun)
 				if err != nil {
 					return fmt.Errorf("error deleting host cluster: %d lun ID %d,  %s", lun.HostClusterID, lun.Lun, err.Error())
 				}
@@ -287,7 +287,7 @@ func (v *Volume) UnMap(client *Client) (err error) {
 			}
 
 			var deletedLun Lun
-			err = json.Unmarshal(*result.ApiResult, &deletedLun)
+			err = json.Unmarshal(*result.APIResult, &deletedLun)
 			if err != nil {
 				return fmt.Errorf("error deleting host: %d lun ID %d,  %s", lun.HostID, lun.Lun, err.Error())
 			}
@@ -315,7 +315,7 @@ func (v *Volume) Delete(client *Client) (err error) {
 		return fmt.Errorf("error deleting volume: %s,  %s", v.Name, err.Error())
 	}
 	var volume Volume
-	err = json.Unmarshal(*result.ApiResult, &volume)
+	err = json.Unmarshal(*result.APIResult, &volume)
 	if err != nil {
 		return fmt.Errorf("error deleting volume: %s,  %s", v.Name, err.Error())
 	}
@@ -338,7 +338,7 @@ func (v *Volume) updateAttributes(client *Client, attributesMap map[string]inter
 			return fmt.Errorf("error updating volume: %s,  %s", v.Name, err.Error())
 		}
 
-		err = json.Unmarshal(*result.ApiResult, &v)
+		err = json.Unmarshal(*result.APIResult, &v)
 		if err != nil {
 			return fmt.Errorf("error updating volume: %s,  %s", v.Name, err.Error())
 		}
@@ -446,7 +446,7 @@ func (v *Volume) Snapshot(client *Client, name string) (snapshot *Volume, err er
 		return nil, fmt.Errorf("error creating volume: %s,  %s", v.Name, err.Error())
 	}
 
-	err = json.Unmarshal(*result.ApiResult, &snapshot)
+	err = json.Unmarshal(*result.APIResult, &snapshot)
 	if err != nil {
 		return nil, fmt.Errorf("error creating volume: %s,  %s", v.Name, err.Error())
 	}
@@ -472,7 +472,7 @@ func (v *Volume) Restore(client *Client, snapshotID uint64) (err error) {
 	}
 
 	var operationResult bool
-	err = json.Unmarshal(*result.ApiResult, &operationResult)
+	err = json.Unmarshal(*result.APIResult, &operationResult)
 	if err != nil {
 		return fmt.Errorf("error restoring volume: %s from snapshot ID %d,  %s", v.Name, snapshotID, err.Error())
 	}
@@ -503,7 +503,7 @@ func (v *Volume) Refresh(client *Client, snapshotID uint64) (err error) {
 	}
 
 	var volume Volume
-	err = json.Unmarshal(*result.ApiResult, &volume)
+	err = json.Unmarshal(*result.APIResult, &volume)
 	if err != nil {
 		return fmt.Errorf("error refreshing volume: %s to snapshot ID %d,  %s", v.Name, snapshotID, err.Error())
 	}
